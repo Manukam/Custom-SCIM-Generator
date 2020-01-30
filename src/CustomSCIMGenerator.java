@@ -16,7 +16,7 @@ public class CustomSCIMGenerator {
     private static String LDAP_SEARCH_BASE;
     private static String SEARCH_FILTER;
     private static String ATTRIBUTE_TO_PRINT;
-    private static String LDAP_REFERRAL; // follow or ignore
+    private static String LDAP_REFERRAL;
     private static String KEYSTORE;
     private static String KEYSTORE_PASSWORD;
 
