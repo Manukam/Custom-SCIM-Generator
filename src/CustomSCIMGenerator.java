@@ -19,6 +19,7 @@ public class CustomSCIMGenerator {
     private static String LDAP_REFERRAL;
     private static String KEYSTORE;
     private static String KEYSTORE_PASSWORD;
+    private static String UPDATE_ENTRY;
 
     public static void main(String[] args) throws NamingException, IOException {
 
@@ -50,20 +51,27 @@ public class CustomSCIMGenerator {
         NamingEnumeration answer = ctx.search(LDAP_SEARCH_BASE, SEARCH_FILTER, ctls);
         answer.next();
         System.out.println("Users with missing SCIM ID");
-        while (answer.hasMore() == true) {
+        while (answer.hasMore() == true) {     //Iterating over the users who does not have SCIM_IDs
             SearchResult sr = (SearchResult) answer.next();
             Attributes attrs = sr.getAttributes();
-            String objectClass = String.valueOf(attrs.get("objectClass")).split(":")[1].trim();
-            if (objectClass.equals("identityPerson")) {
-                String uid = attrs.get("uid").toString().split(":")[1].trim();
+            String uid = attrs.get("uid").toString().split(":")[1].trim();
+            String objectClass = String.valueOf(attrs.get("objectClass")).split(":")[1].trim();  //Extracting the object class of the user
+            if(objectClass.contains("identityPerson")){
+                System.out.println("Identity Person available for: "+ uid);
+                System.out.println("Object Class: "+ objectClass);
+            }
+            if (objectClass.contains("identityPerson")) {   //Only updating the users with identityPerson object class
                 System.out.println(uid);
-                updateScimEntry(ctx, uid);
+                if(UPDATE_ENTRY.equalsIgnoreCase("true")){   //Checking if updating is configured to be true.
+                    updateScimEntry(ctx, uid);
+                }
             }
         }
     }
 
     public static boolean updateScimEntry(DirContext ctx, String uid) {
         try {
+            System.out.println("Attempting to update the scim id entry of user: "+ uid);
             Attributes attributes = new BasicAttributes();
             Attribute atb = new BasicAttribute("scimId", UUID.randomUUID().toString());
             attributes.put(atb);
@@ -87,6 +95,7 @@ public class CustomSCIMGenerator {
         LDAP_REFERRAL = catalogProps.getProperty("LDAP_REFERRAL");
         KEYSTORE = catalogProps.getProperty("KEYSTORE");
         KEYSTORE_PASSWORD = catalogProps.getProperty("KEYSTORE_PASSWORD");
+        UPDATE_ENTRY = catalogProps.getProperty("UPDATE_ENTRY");
     }
 
 }
