@@ -50,23 +50,23 @@ public class CustomSCIMGenerator {
         ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         NamingEnumeration answer = ctx.search(LDAP_SEARCH_BASE, SEARCH_FILTER, ctls);
         answer.next();
-        System.out.println("Users with missing SCIM ID");
+        System.out.println("-------Users with missing SCIM ID ------");
         while (answer.hasMore() == true) {     //Iterating over the users who does not have SCIM_IDs
             SearchResult sr = (SearchResult) answer.next();
             Attributes attrs = sr.getAttributes();
             String uid = attrs.get("uid").toString().split(":")[1].trim();
             String objectClass = String.valueOf(attrs.get("objectClass")).split(":")[1].trim();  //Extracting the object class of the user
             if(objectClass.contains("identityPerson")){
-                System.out.println("Identity Person available for: "+ uid);
+                System.out.println(uid);
                 System.out.println("Object Class: "+ objectClass);
             }
             if (objectClass.contains("identityPerson")) {   //Only updating the users with identityPerson object class
-                System.out.println(uid);
                 if(UPDATE_ENTRY.equalsIgnoreCase("true")){   //Checking if updating is configured to be true.
                     updateScimEntry(ctx, uid);
                 }
             }
         }
+        System.out.println("-----END-------");
     }
 
     public static boolean updateScimEntry(DirContext ctx, String uid) {
