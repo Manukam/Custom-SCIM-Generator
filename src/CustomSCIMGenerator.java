@@ -66,7 +66,7 @@ public class CustomSCIMGenerator {
                 }
             }
         }
-        System.out.println("-----END-------");
+        System.out.println("-----END------");
     }
 
     public static boolean updateScimEntry(DirContext ctx, String uid) {
